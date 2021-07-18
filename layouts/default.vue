@@ -31,7 +31,7 @@
       </v-btn>
       <v-toolbar-title v-text="title" />
       <v-spacer />
-      <v-btn icon title="Go to LookIt on Github" @click.stop="openGithub">
+      <v-btn icon title="Go to SODA on Github" @click.stop="openGithub">
         <v-icon>mdi-github</v-icon>
       </v-btn>
     </v-app-bar>
@@ -49,7 +49,7 @@
         </v-row>
         <v-row justify="space-around">
           <span
-            >{{ new Date().getFullYear() }} - <strong>LookIt</strong> - Built
+            >{{ new Date().getFullYear() }} - <strong>SODA</strong> - Built
             using create nuxt app</span
           >
         </v-row>
@@ -95,12 +95,12 @@ export default {
       ],
       miniVariant: false,
       right: true,
-      title: 'LookIt'
+      title: 'SODA'
     }
   },
   methods: {
     openGithub() {
-      window.open('https://github.com/zacpez/lookit')
+      window.open('https://github.com/Kubeitron/SODA')
     },
   },
 }

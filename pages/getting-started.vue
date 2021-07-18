@@ -8,7 +8,7 @@
 <script>
 export default {
   async asyncData({ $content }) {
-    const page = await $content('README').fetch()
+    const page = await $content('GETTING_STARTED').fetch()
 
     return {
       page,

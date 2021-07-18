@@ -1,5 +1,19 @@
 {
-  "name": "LookIt",
+  "name": "soda-ui",
+  "description": "Security, Observability Dashboard and Analysis",
+  "keywords": [
+    "Nuxt",
+    "Vue",
+    "Typescript",
+    "yarn",
+    "npm",
+    "axios",
+    "markdown",
+    "security",
+    "dashboard",
+    "Vuetify",
+    "Sass"
+  ],
   "version": "0.1.0",
   "private": true,
   "scripts": {

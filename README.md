@@ -1,6 +1,7 @@
-# Look It
+# Security, Observability Dashboard and Analysis(SODA)
 
-Security Certificate dashboard and metrics explorer.
+This is the frontend to a suite of apis that exposed health of various deployed
+applications and their features in Kubernetes.
 
 ## Requirements
 
