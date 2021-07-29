@@ -78,10 +78,10 @@
       <v-col>
         <v-virtual-scroll
           :items="items"
-          height="1750"
-          item-height="350">
+          height="calc(100vh - 320px)"
+          item-height="80">
           <template v-slot:default="{ item }">
-            <v-expansion-panels multiple>
+            <v-expansion-panels>
               <v-expansion-panel :key="'exp-'+item.uuid">
                 <v-expansion-panel-header v-slot="{ open }">
                   <v-row no-gutters>
@@ -90,15 +90,13 @@
                     </v-col>
                     <v-col
                       cols="8"
-                      class="text--secondary"
-                    >
+                      class="text--secondary">
                       <v-fade-transition leave-absolute>
                         <span v-if="open">Certificate Details</span>
                         <v-row
                           v-else
                           no-gutters
-                          style="width: 100%"
-                        >
+                          style="width: 100%">
                           <v-col cols="6">
                             <b>Created On:</b> {{ item.createdAt || 'Not set' }}
                           </v-col>
@@ -167,12 +165,6 @@
 import Vue from 'vue';
 import {Certificate} from '@/models/certificate';
 
-// Expansion so faker works
-declare module 'vue/types/vue' {
-  interface Vue {
-    $faker: any
-  }
-}
 export default Vue.extend({
   async asyncData({ $axios }) {
 
@@ -240,16 +232,16 @@ export default Vue.extend({
     getServices(): void {
       for(let i = 0; i< 1000; i++) {
         const item: Certificate = {
-          uuid:  this.$faker.fake('{{random.uuid}}'),
+          uuid:  this.$faker.fake('{{datatype.uuid}}'),
           name:  this.$faker.fake('{{internet.domainName}}'),
-          hash:  this.$faker.fake('{{random.hexaDecimal}}'),
+          hash:  this.$faker.fake('{{datatype.hexaDecimal}}'),
           notes:  this.$faker.fake('{{lorem.sentence}}'),
           tags:  [this.$faker.fake('{{name.jobArea}}'), this.$faker.fake('{{name.jobArea}}')],
           createdAt:  this.$faker.fake('{{date.past}}'),
           updatedAt:  this.$faker.fake('{{date.recent}}'),
           expiresAt:  this.$faker.fake('{{date.future}}'),
           createdBy:  this.$faker.fake('{{internet.userName}}'),
-          isPrivate:  this.$faker.fake('{{random.boolean}}'),
+          isPrivate:  this.$faker.fake('{{datatype.boolean}}'),
         };
         this.items.push(item);
       }
@@ -266,10 +258,9 @@ export default Vue.extend({
 
 <style scoped>
 .container {
-  margin: 0 auto;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  margin: 0 auto;
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -287,5 +278,9 @@ export default Vue.extend({
 }
 .v-expansion-panel-content__wrap.v-expansion-panel-content__wrap {
   text-align: left;
+}
+.v-expansion-panels:not(.v-expansion-panels--accordion):not(.v-expansion-panels--tile) > .v-expansion-panel--active {
+  display: block;
+  z-index: 1000;
 }
 </style>
