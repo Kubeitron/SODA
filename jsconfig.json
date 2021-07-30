@@ -9,7 +9,7 @@
     },
     "types": [
       "@nuxt/types",
-      "@nuxtjs/axios"
+      "@nuxtjs/axios",
     ]
   },
   "exclude": ["node_modules", ".nuxt", "dist"]

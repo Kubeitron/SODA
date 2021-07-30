@@ -1,5 +1,4 @@
 import colors from 'vuetify/es5/util/colors';
-import CopyPlugin from 'copy-webpack-plugin';
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -95,13 +94,6 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
-    plugins: [
-      new CopyPlugin({
-        patterns: [
-          { from: "README.md", to: "content/README" }
-        ],
-      }),
-    ],
     babel: {
       plugins: [
         '@babel/plugin-proposal-optional-chaining'
