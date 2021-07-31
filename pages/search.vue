@@ -76,86 +76,81 @@
     </v-row>
     <v-row class="element-list">
       <v-col>
-        <v-virtual-scroll
-          :items="items"
-          height="calc(100vh - 320px)"
-          item-height="80">
-          <template v-slot:default="{ item }">
-            <v-expansion-panels>
-              <v-expansion-panel :key="'exp-'+item.uuid">
-                <v-expansion-panel-header v-slot="{ open }">
-                  <v-row no-gutters>
-                    <v-col cols="4">
-                      {{ item.name }}
-                    </v-col>
-                    <v-col
-                      cols="8"
-                      class="text--secondary">
-                      <v-fade-transition leave-absolute>
-                        <span v-if="open">Certificate Details</span>
-                        <v-row
-                          v-else
-                          no-gutters
-                          style="width: 100%">
-                          <v-col cols="6">
-                            <b>Created On:</b> {{ item.createdAt || 'Not set' }}
-                          </v-col>
-                          <v-col cols="6">
-                            <b>Expires On:</b> {{ item.expiresAt || 'Not set' }}
-                          </v-col>
-                        </v-row>
-                      </v-fade-transition>
-                    </v-col>
-                  </v-row>
-                </v-expansion-panel-header>
-                <v-expansion-panel-content>  
-                  <v-row justify="start">
-                    <v-col class="d-flex flex-row">
-                      <div class="text-left">
-                        <b>UUID</b> 
-                        <div>{{item.uuid}}</div>
-                      </div> 
-                      <template v-for="(tag, index) in item.tags">
-                        <v-chip
-                          :key="'tag-'+item.uuid+index"
-                          class="ma-2"
-                          color="primary">
-                          {{ tag }}
-                        </v-chip>
-                      </template>
-                    </v-col>
-                  </v-row>
-                  <v-row justify="start">
-                    <v-col class="text-left">
-                      <b>Certificate Hash</b> 
-                      <div>{{ item.hash }}</div>
-                    </v-col> 
-                  </v-row>
-                  <v-row justify="start">
-                    <v-col class="text-left">
-                      <b>Notes</b> 
-                      <div>{{ item.notes }}</div>
-                    </v-col> 
-                  </v-row>    
-                  <v-row>
-                    <v-col class="text-left">
-                      <b>Created On</b> 
-                      <div>{{ item.createdAt }}</div>
-                    </v-col> 
-                    <v-col class="text-left">
-                      <b>Updated On</b> 
-                      <div>{{ item.updatedAt }}</div>
-                    </v-col> 
-                    <v-col class="text-left">
-                      <b>Expires On</b> 
-                      <div>{{ item.expiresAt }}</div>
-                    </v-col> 
-                  </v-row>            
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-            </v-expansion-panels>
+        <v-expansion-panels>
+          <template v-for="item of items">
+            <v-expansion-panel :key="'exp-'+item.uuid">
+              <v-expansion-panel-header v-slot="{ open }">
+                <v-row no-gutters>
+                  <v-col cols="4">
+                    {{ item.name }}
+                  </v-col>
+                  <v-col
+                    cols="8"
+                    class="text--secondary">
+                    <v-fade-transition leave-absolute>
+                      <span v-if="open">Certificate Details</span>
+                      <v-row
+                        v-else
+                        no-gutters
+                        style="width: 100%">
+                        <v-col cols="6">
+                          <b>Created On:</b> {{ item.createdAt || 'Not set' }}
+                        </v-col>
+                        <v-col cols="6">
+                          <b>Expires On:</b> {{ item.expiresAt || 'Not set' }}
+                        </v-col>
+                      </v-row>
+                    </v-fade-transition>
+                  </v-col>
+                </v-row>
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>  
+                <v-row justify="start">
+                  <v-col class="d-flex flex-row">
+                    <div class="text-left">
+                      <b>UUID</b> 
+                      <div>{{item.uuid}}</div>
+                    </div> 
+                    <template v-for="(tag, index) in item.tags">
+                      <v-chip
+                        :key="'tag-'+item.uuid+index"
+                        class="ma-2"
+                        color="primary">
+                        {{ tag }}
+                      </v-chip>
+                    </template>
+                  </v-col>
+                </v-row>
+                <v-row justify="start">
+                  <v-col class="text-left">
+                    <b>Certificate Hash</b> 
+                    <div>{{ item.hash }}</div>
+                  </v-col> 
+                </v-row>
+                <v-row justify="start">
+                  <v-col class="text-left">
+                    <b>Notes</b> 
+                    <div>{{ item.notes }}</div>
+                  </v-col> 
+                </v-row>    
+                <v-row>
+                  <v-col class="text-left">
+                    <b>Created On</b> 
+                    <div>{{ item.createdAt }}</div>
+                  </v-col> 
+                  <v-col class="text-left">
+                    <b>Updated On</b> 
+                    <div>{{ item.updatedAt }}</div>
+                  </v-col> 
+                  <v-col class="text-left">
+                    <b>Expires On</b> 
+                    <div>{{ item.expiresAt }}</div>
+                  </v-col> 
+                </v-row>            
+              </v-expansion-panel-content>
+            </v-expansion-panel>
           </template>
-        </v-virtual-scroll>
+        </v-expansion-panels>
       </v-col>
     </v-row>
   </v-container>
@@ -230,7 +225,7 @@ export default Vue.extend({
   },
   methods: {
     getServices(): void {
-      for(let i = 0; i< 1000; i++) {
+      for(let i = 0; i < 100; i++) {
         const item: Certificate = {
           uuid:  this.$faker.fake('{{datatype.uuid}}'),
           name:  this.$faker.fake('{{internet.domainName}}'),
@@ -275,6 +270,9 @@ export default Vue.extend({
 .action-bar,
 .element-list {
   width: 100%;
+}
+.v-expansion-panels .v-expansion-panel {
+  margin-bottom: 4px;
 }
 .v-expansion-panel-content__wrap.v-expansion-panel-content__wrap {
   text-align: left;
