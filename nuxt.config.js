@@ -42,8 +42,6 @@ export default {
     '@nuxtjs/pwa',
     // https://go.nuxtjs.dev/content
     '@nuxt/content',
-
-    'faker-nuxt',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -86,8 +84,8 @@ export default {
     },
   },
 
+  // Faker configuration: https://github.com/marak/Faker.js/
   faker: {
-    /* module options */
     locale: 'en_CA',
     seed: 17072021,
   },
@@ -95,9 +93,17 @@ export default {
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
     babel: {
-      plugins: [
-        '@babel/plugin-proposal-optional-chaining'
-      ]
-    }
+      // This disables polyfills to keep bundle size down, remove only if support is needed
+      presets({ isServer }, [preset, options]) {
+        console.log(`Switching ${preset} to usage mode`)
+        options.useBuiltIns = isServer ? 'usage' : false
+      },
+    },
+    optimization: {
+      splitChunks: {
+        // include all types of chunks
+        chunks: 'all',
+      },
+    },
   },
 }
