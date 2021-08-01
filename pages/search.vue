@@ -1,80 +1,98 @@
 <template>
   <v-container>
     <v-row class="action-bar">
-      <v-col>
-        <v-select
-          v-model="service"
-          :items="options.services"
-          label="Services"
-          item-text="name"
-          item-value="uuid"
-          prepend-icon="mdi-database-search"
-          solo
-        ></v-select>
-      </v-col>  
-      <v-col class="column-spacer">
-        <span class="column-spacer__padding"></span>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              v-show="! filtersOpen"
-              v-bind="attrs"
-              v-on="on"
-              icon
-              color="blue"
-              @click="toggleFilters"
-            >
-              <v-icon>{{hasFilters}}</v-icon>
-            </v-btn>
-          </template>
-          <span>Open Filters</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                v-show="filtersOpen"
-                v-bind="attrs"
-                v-on="on"
-                icon
-                color="red"
-                @click="clearFilters"
-              >
-                <v-icon>mdi-filter-off</v-icon>
-              </v-btn>
-          </template>
-          <span>Clear Filters</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                v-show="filtersOpen"
-                v-bind="attrs"
-                v-on="on"
-                color="primary"
-                @click="clearFilters"
-              >
-                Apply
-              </v-btn>
-          </template>
-          <span>Apply Filters on Search</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                v-show="filtersOpen"
-                v-bind="attrs"
-                v-on="on"
-                icon
-                @click="toggleFilters"
-              >
-                <v-icon>mdi-close-thick</v-icon>
-              </v-btn>
-          </template>
-          <span>Close Filters Panel</span>
-        </v-tooltip>
-      </v-col>
+      <v-expansion-panels>
+        <v-expansion-panel @click="toggleFilters">
+          <v-expansion-panel-header disable-icon-rotate>
+            <v-col>
+              <v-select
+                v-model="service"
+                :items="options.services"
+                label="Services"
+                item-text="name"
+                item-value="uuid"
+                prepend-icon="mdi-database-search"
+                solo
+                @click.stop=""
+              ></v-select>
+            </v-col>
+            <template v-slot:actions>
+              <v-col class="column-spacer">
+                <span class="column-spacer__padding"></span>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      v-show="!filtersOpen"
+                      v-bind="attrs"
+                      v-on="on"
+                      icon
+                      color="blue">
+                      <v-icon>{{hasFilters}}</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Open Filters</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      v-show="filtersOpen"
+                      v-bind="attrs"
+                      v-on="on"
+                      icon
+                      color="red"
+                      @click="clearFilters">
+                      <v-icon>mdi-filter-off</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Clear Filters</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      v-show="filtersOpen"
+                      v-bind="attrs"
+                      v-on="on"
+                      color="primary"
+                      @click="getServices">
+                      Apply
+                    </v-btn>
+                  </template>
+                  <span>Apply Filters on Search</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn
+                      v-show="filtersOpen"
+                      v-bind="attrs"
+                      v-on="on"
+                      icon>
+                      <v-icon>mdi-close-thick</v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Close Filters Panel</span>
+                </v-tooltip>
+              </v-col>
+            </template>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <h1>Expires before</h1>
+            <v-date-picker 
+              v-model="picker"
+              full-width></v-date-picker>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
     </v-row>
-    <v-row class="element-list">
+    <v-row v-bind:style="{width: '100%'}" class="status-bar" v-if="hasSearched">
+      <v-col cols="2">
+        <template v-if="loadingItems">
+          <v-icon v-icon>mdi-blur</v-icon>
+        </template>
+        {{ loadingItems ? '' : items.length }} Results
+      </v-col>
+      <v-col cols="10"></v-col>
+    </v-row>
+    <v-row v-bind:style="{width: '100%'}" class="element-list">
       <v-col>
         <v-expansion-panels>
           <template v-for="item of items">
@@ -196,13 +214,18 @@ export default Vue.extend({
   data() {
     const service = '';
     const filters: string[] = [];
-    const filtersOpen: Boolean = false;
+    const filtersOpen = false;
     const items: Certificate[] = [];
+    const hasSearched = false;
+    const loadingItems = false;
     return {
       service,
       filters,
       filtersOpen,
-      items
+      items,
+      hasSearched,
+      loadingItems,
+      picker: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
     };
   },
   computed: {
@@ -226,6 +249,8 @@ export default Vue.extend({
   methods: {
     getServices(): void {
       this.items = [];
+      this.hasSearched = true;
+      this.loadingItems = true;
       for(let i = 0; i < 100; i++) {
         const item: Certificate = {
           uuid:  this.$faker.fake('{{datatype.uuid}}'),
@@ -239,10 +264,14 @@ export default Vue.extend({
           createdBy:  this.$faker.fake('{{internet.userName}}'),
           isPrivate:  this.$faker.fake('{{datatype.boolean}}'),
         };
-        this.items.push(item);
+        if (new Date(this.picker).getTime() >= new Date(item.expiresAt).getTime()) {
+          this.items.push(item);
+        }
       }
+      this.loadingItems = false;
     },
     toggleFilters(): void {
+      console.log(this.filtersOpen)
       this.filtersOpen = !this.filtersOpen;
     },
     clearFilters(): void {
@@ -268,12 +297,18 @@ export default Vue.extend({
 .column-spacer__padding {
   flex: 1;
 }
-.action-bar,
-.element-list {
-  width: 100%;
+.action-bar .v-expansion-panel::before,
+.action-bar .v-expansion-panel {
+  box-shadow: unset;
+  background: unset;
+  background-color: unset;
 }
 .v-expansion-panels .v-expansion-panel {
   margin-bottom: 4px;
+}
+.v-expansion-panel-header .v-input__control {
+    flex-direction: row;
+    flex-wrap: nowrap;
 }
 .v-expansion-panel-content__wrap.v-expansion-panel-content__wrap {
   text-align: left;
