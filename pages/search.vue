@@ -225,6 +225,7 @@ export default Vue.extend({
   },
   methods: {
     getServices(): void {
+      this.items = [];
       for(let i = 0; i < 100; i++) {
         const item: Certificate = {
           uuid:  this.$faker.fake('{{datatype.uuid}}'),

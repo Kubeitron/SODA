@@ -42,15 +42,19 @@
       <v-container>
         <v-row justify="space-around">
           <v-col v-for="link in items" :key="link.title">
-            <v-btn color="white" text class="my-2">
+            <v-btn
+              color="white"
+              class="my-2"
+              to="/home"
+              text
+              nuxt>
               {{ link.title }}
             </v-btn>
           </v-col>
         </v-row>
         <v-row justify="space-around">
           <span
-            >{{ new Date().getFullYear() }} - <strong>SODA</strong> - Built
-            using create nuxt app</span
+            >{{ new Date().getFullYear() }} - <strong>SODA</strong> - soda-ui({{ version }}) - soda-api({{ version }}) - soda-other({{ version }})</span
           >
         </v-row>
       </v-container>
@@ -59,10 +63,12 @@
 </template>
 
 <script>
+import { repository, version} from '../package.json';
 export default {
   name: "default",
   data() {
     return {
+      version: version,
       clipped: true,
       drawer: true,
       fixed: false,
@@ -80,17 +86,17 @@ export default {
         {
           icon: 'mdi-playlist-plus',
           title: 'Getting Started',
-          to: '/getting-started',
+          to: '/soda/getting-started',
         },
         {
           icon: 'mdi-folder-information-outline',
           title: 'Documentation',
-          to: '/docs',
+          to: '/soda/docs',
         },
         {
           icon: 'mdi-pencil-ruler',
           title: 'Contributing',
-          to: '/contribution',
+          to: '/soda/contribution',
         },
       ],
       miniVariant: false,
@@ -100,7 +106,7 @@ export default {
   },
   methods: {
     openGithub() {
-      window.open('https://github.com/Kubeitron/SODA')
+      window.open(repository.url)
     },
   },
 }
