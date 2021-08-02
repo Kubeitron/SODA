@@ -17,7 +17,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
+    "seed": "node seed.js",
+    "dev": "yarn seed && nuxt",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",

@@ -1,15 +1,15 @@
 <template>
   <v-expansion-panel>
     <v-expansion-panel-header v-slot="{ open }">
-      <v-row no-gutters>
-        <v-col cols="4">
-          {{ namespace }}
-        </v-col>
+      <v-row no-gutters>       
+        <v-col class="text-left">
+          <div>{{ routeName }}({{ routeHost }})</div>
+        </v-col> 
         <v-col
           cols="8"
           class="text--secondary">
           <v-fade-transition leave-absolute>
-            <span v-if="open">Certificate Details</span>
+            <span v-if="open">Route Details</span>
             <v-row
               v-else
               no-gutters
@@ -27,33 +27,34 @@
     </v-expansion-panel-header>
     <v-expansion-panel-content>  
       <v-row justify="start">
-        <v-col class="d-flex flex-row">
+        <v-col class="d-flex flex-row justify-space-between">
           <div class="text-left">
             <b>UUID</b> 
             <div>{{uuid}}</div>
           </div> 
-          <template v-for="(tag, index) in [encryptionType ,insecureTraffic]">
-            <v-chip
-              :key="'tag-'+uuid+index"
-              class="ma-2"
-              color="primary">
-              {{ tag }}
-            </v-chip>
-          </template>
+          <div>
+            <template v-for="(tag, index) in tags"
+              class="text-right">
+              <v-chip
+                :key="'tag-'+uuid+index"
+                class="ma-2 "
+                color="primary">
+                {{ tag }}
+              </v-chip>
+            </template>
+          </div>
         </v-col>
       </v-row>
       <v-row justify="start">
         <v-col class="text-left">
+          <b>Namespace</b> 
+          <div>{{ namespace }}</div>
+        </v-col> 
+        <v-col class="text-left">
           <b>Certificate Hash</b> 
           <div>{{ certHash }}</div>
         </v-col> 
-      </v-row>
-      <v-row justify="start">
-        <v-col class="text-left">
-          <b>Route</b> 
-          <div>{{ routeName }} {{ routeHost }}</div>
-        </v-col> 
-      </v-row>    
+      </v-row> 
       <v-row>
         <v-col class="text-left">
           <b>Created On</b> 
@@ -94,18 +95,18 @@ export default Vue.extend({
       required: true
     },
     certCreatedOn: {
-      type: Date,
+      type: String,
       required: true
     },
     certExpiresOn: {
-      type: Date,
+      type: String,
       required: true
     },
-    CertSans: {
+    certSans: {
       type: Array,
       required: true
     },
-    Wildcard: {
+    wildcard: {
       type: Boolean,
       required: true
     },
@@ -117,6 +118,15 @@ export default Vue.extend({
       type: String,
       required: true
     },
+  },
+  computed: {
+    tags() {
+      let visibleTags = [this.encryptionType, this.insecureTraffic];
+      if(this.wildcard) {
+        visibleTags.push("Wildcard");
+      }
+      return visibleTags;
+    }
   }
 })
 </script>

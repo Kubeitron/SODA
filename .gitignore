@@ -98,6 +98,7 @@ out
 # Nuxt.js build / generate output
 .nuxt
 dist
+assets/routes.json
 
 # Gatsby files
 .cache/

@@ -3,6 +3,7 @@
  */
 export class ClusterRoute {
   uuid: string = '';
+  cluster: string = '';
   namespace: string = '';
   routeName: string = '';
   routeHost: string = '';
@@ -10,7 +11,7 @@ export class ClusterRoute {
   certCreatedOn: Date = new Date();
   certExpiresOn: Date = new Date();
   certSans: Array<String> = [];
-  wildcard: string = '';
+  wildcard: boolean = false;
   encryptionType: String = '';
   insecureTraffic: String = '';
 }

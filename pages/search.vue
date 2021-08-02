@@ -1,105 +1,33 @@
 <template>
   <v-container>
     <v-row class="action-bar">
-      <v-expansion-panels>
-        <v-expansion-panel @click="toggleFilters">
-          <v-expansion-panel-header disable-icon-rotate>
-            <v-col>
-              <v-select
-                v-model="service"
-                :items="options.services"
-                label="Services"
-                item-text="name"
-                item-value="uuid"
-                prepend-icon="mdi-database-search"
-                solo
-                multiple
-                @click.stop=""
-              ></v-select>
-            </v-col>
-            <template v-slot:actions>
-              <v-col class="column-spacer">
-                <span class="column-spacer__padding"></span>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      v-show="!filtersOpen"
-                      v-bind="attrs"
-                      v-on="on"
-                      icon
-                      color="blue">
-                      <v-icon>{{hasFilters}}</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Open Filters</span>
-                </v-tooltip>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      v-show="filtersOpen"
-                      v-bind="attrs"
-                      v-on="on"
-                      icon
-                      color="red"
-                      @click="clearFilters">
-                      <v-icon>mdi-filter-off</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Clear Filters</span>
-                </v-tooltip>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      v-show="filtersOpen"
-                      v-bind="attrs"
-                      v-on="on"
-                      color="primary"
-                      @click="getServices">
-                      Apply
-                    </v-btn>
-                  </template>
-                  <span>Apply Filters on Search</span>
-                </v-tooltip>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn
-                      v-show="filtersOpen"
-                      v-bind="attrs"
-                      v-on="on"
-                      icon>
-                      <v-icon>mdi-close-thick</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Close Filters Panel</span>
-                </v-tooltip>
-              </v-col>
-            </template>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <h1>Expires before</h1>
-            <v-date-picker 
-              v-model="picker"
-              full-width></v-date-picker>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
+      <cluster-route-filters
+        :cluster-options="options.clusters"
+        :namespace-options="allNamespaces"
+        :cert-expires-on="certExpiresOn"
+        @handle-get-routes="getRoutes">
+      </cluster-route-filters>
     </v-row>
-    <v-row v-bind:style="{width: '100%'}" class="status-bar" v-if="hasSearched">
+    <v-row 
+      v-if="hasSearched"
+      v-bind:style="{width: '100%'}"
+      class="status-bar">
       <v-col cols="2">
         <template v-if="loadingItems">
           <v-icon v-icon>mdi-blur</v-icon>
         </template>
-        {{ loadingItems ? '' : items.length }} Results
+        {{ loadingItems ? '' : visibleItems.length }} Results
       </v-col>
       <v-col cols="10"></v-col>
     </v-row>
     <v-row v-bind:style="{width: '100%'}" class="element-list">
       <v-col>
         <v-expansion-panels>
-          <template v-for="item of items">
+          <template v-for="(item, index) of visibleItems">
             <cluster-route
-              :key="'cluster-route-'+item.uuid"
-              v-bind="item">
+              v-if="index < threshold"
+              v-bind="item"
+              :key="'cluster-route-'+item.uuid">
             </cluster-route>
           </template>
         </v-expansion-panels>
@@ -111,6 +39,8 @@
 <script lang="ts">
 import Vue from 'vue';
 import {ClusterRoute} from '~/models/cluster-route';
+import { ClusterRouteFilters } from '~/models/cluster-route-filters';
+import allItemsConst from "@/assets/routes.json"
 
 export default Vue.extend({
   async asyncData({ $axios }) {
@@ -131,7 +61,7 @@ export default Vue.extend({
         console.error('Request errored', error)
         // @todo: remove once endpoint is available
         const options = {
-          services: [
+          clusters: [
             {name: 'Cola', uuid: 'asd-678'},
             {name: 'Spritzer', uuid: 'asd-567'},
             {name: 'Spritzer DR', uuid: 'asd-456'},
@@ -144,76 +74,73 @@ export default Vue.extend({
     return { };
   },
   data() {
-    const service = '';
-    const filters: string[] = [];
-    const filtersOpen = false;
-    const items: ClusterRoute[] = [];
+    const threshold = 100;
+    const allItems: ClusterRoute[] = allItemsConst;
+    const allNamespaces: String[] = [];
+    allItemsConst.forEach((item: ClusterRoute) => {
+      allNamespaces.push(item.namespace);
+    });
+    const visibleItems: ClusterRoute[] = [];
     const hasSearched = false;
     const loadingItems = false;
     return {
-      service,
-      filters,
-      filtersOpen,
-      items,
+      threshold,
+      allItems,
+      allNamespaces,
+      visibleItems,
       hasSearched,
       loadingItems,
-      picker: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+      certExpiresOn: null,
     };
-  },
-  computed: {
-    hasFilters(): string {
-      if (this.filtersOpen) {
-        return 'mdi-filter';
-      }
-      return 'mdi-filter-menu';
-    }
   },
   head() {
     return {
       title: "Search"
     };
   },
-  watch: {
-    service() {
-      this.getServices();
-    }
-  },
+  // mounted(){
+  //   const clusterOptions = ['asd-678', 'asd-567', 'asd-456'];
+  //   const ecrytionOptions = ['Edge', 'ReEncrypt', 'Passthrough'];
+  //   const insecureOptions = ['None', 'Redirect', 'Allow'];
+  //   for(let i = 0; i < 3000; i++) {
+  //     const item: ClusterRoute = {
+  //       uuid:  this.$faker.fake('{{datatype.uuid}}'),
+  //       cluster:  clusterOptions[Math.round(Math.random()*2)],
+  //       namespace:  this.$faker.fake('{{datatype.uuid}}').substring(0, 8),
+  //       routeName:  this.$faker.fake('{{company.companyName}}'),
+  //       routeHost:  this.$faker.fake('{{internet.domainName}}'),
+  //       certHash:  this.$faker.fake('{{datatype.hexaDecimal}}'),
+  //       wildcard:  this.$faker.fake('{{datatype.boolean}}') === 'true',
+  //       certCreatedOn:  this.$faker.fake('{{date.past}}'),
+  //       certExpiresOn:  this.$faker.fake('{{date.future}}'),
+  //       certSans: [
+  //         this.$faker.fake('{{internet.domainName}}'),
+  //         this.$faker.fake('{{internet.domainName}}'),
+  //         this.$faker.fake('{{internet.domainName}}')
+  //       ],
+  //       encryptionType:  ecrytionOptions[Math.round(Math.random()*2)],
+  //       insecureTraffic: insecureOptions[Math.round(Math.random()*2)],
+  //     };
+  //     this.allItems.push(item);
+  //   }
+  // },
   methods: {
-    getServices(): void {
-      this.items = [];
+    getRoutes(filters: ClusterRouteFilters): void {
+      console.log(filters)
       this.hasSearched = true;
-      this.loadingItems = true;
-      for(let i = 0; i < 100; i++) {
-        const item: ClusterRoute = {
-          uuid:  this.$faker.fake('{{datatype.uuid}}'),
-          namespace:  this.$faker.fake('{{datatype.hexaDecimal}}'),
-          routeName:  this.$faker.fake('{{company.companyName}}'),
-          routeHost:  this.$faker.fake('{{internet.domainName}}'),
-          certHash:  this.$faker.fake('{{datatype.hexaDecimal}}'),
-          wildcard:  this.$faker.fake('{{datatype.boolean}}'),
-          certCreatedOn:  this.$faker.fake('{{date.past}}'),
-          certExpiresOn:  this.$faker.fake('{{date.future}}'),
-          certSans: [
-            this.$faker.fake('{{internet.domainName}}'),
-            this.$faker.fake('{{internet.domainName}}'),
-            this.$faker.fake('{{internet.domainName}}')
-          ],
-          encryptionType:  this.$faker.fake('{{name.jobArea}}'),
-          insecureTraffic: this.$faker.fake('{{name.jobArea}}'),
-        };
-        if (new Date(this.picker).getTime() >= new Date(item.certExpiresOn).getTime()) {
-          this.items.push(item);
-        }
+      this.loadingItems = true;      
+      this.visibleItems = this.allItems;
+      if (filters.certExpiresOn) {
+        this.visibleItems = this.visibleItems.filter((item) => new Date(filters.certExpiresOn).getTime() >= new Date(item.certExpiresOn).getTime());
+      }
+      if (filters.clusters.length > 0) {
+        this.visibleItems = this.visibleItems.filter((item) => filters.clusters.includes(item.cluster));
+      }
+      if (filters.namespaces.length > 0) {
+        this.visibleItems = this.visibleItems.filter((item) => filters.namespaces.includes(item.namespace));
       }
       this.loadingItems = false;
     },
-    toggleFilters(): void {
-      console.log(this.filtersOpen)
-      this.filtersOpen = !this.filtersOpen;
-    },
-    clearFilters(): void {
-      this.filters = [];
-    }
   }
 })
 </script>
@@ -225,7 +152,7 @@ export default Vue.extend({
   min-height: 0;
 }
 </style>
-<style scoped>
+<style>
 .container {
   display: flex;
   flex-direction: column;
@@ -241,12 +168,6 @@ export default Vue.extend({
 .column-spacer__padding {
   flex: 1;
 }
-.action-bar .v-expansion-panel::before,
-.action-bar .v-expansion-panel {
-  box-shadow: unset;
-  background: unset;
-  background-color: unset;
-}
 .v-expansion-panels .v-expansion-panel {
   margin-bottom: 4px;
 }
@@ -260,5 +181,8 @@ export default Vue.extend({
 .v-expansion-panels:not(.v-expansion-panels--accordion):not(.v-expansion-panels--tile) > .v-expansion-panel--active {
   display: block;
   z-index: 1000;
+}
+.v-input__slot.v-input__slot {
+  margin: 0;
 }
 </style>
