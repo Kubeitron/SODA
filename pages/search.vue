@@ -13,6 +13,7 @@
                 item-value="uuid"
                 prepend-icon="mdi-database-search"
                 solo
+                multiple
                 @click.stop=""
               ></v-select>
             </v-col>
@@ -96,77 +97,10 @@
       <v-col>
         <v-expansion-panels>
           <template v-for="item of items">
-            <v-expansion-panel :key="'exp-'+item.uuid">
-              <v-expansion-panel-header v-slot="{ open }">
-                <v-row no-gutters>
-                  <v-col cols="4">
-                    {{ item.name }}
-                  </v-col>
-                  <v-col
-                    cols="8"
-                    class="text--secondary">
-                    <v-fade-transition leave-absolute>
-                      <span v-if="open">Certificate Details</span>
-                      <v-row
-                        v-else
-                        no-gutters
-                        style="width: 100%">
-                        <v-col cols="6">
-                          <b>Created On:</b> {{ item.createdAt || 'Not set' }}
-                        </v-col>
-                        <v-col cols="6">
-                          <b>Expires On:</b> {{ item.expiresAt || 'Not set' }}
-                        </v-col>
-                      </v-row>
-                    </v-fade-transition>
-                  </v-col>
-                </v-row>
-              </v-expansion-panel-header>
-              <v-expansion-panel-content>  
-                <v-row justify="start">
-                  <v-col class="d-flex flex-row">
-                    <div class="text-left">
-                      <b>UUID</b> 
-                      <div>{{item.uuid}}</div>
-                    </div> 
-                    <template v-for="(tag, index) in item.tags">
-                      <v-chip
-                        :key="'tag-'+item.uuid+index"
-                        class="ma-2"
-                        color="primary">
-                        {{ tag }}
-                      </v-chip>
-                    </template>
-                  </v-col>
-                </v-row>
-                <v-row justify="start">
-                  <v-col class="text-left">
-                    <b>Certificate Hash</b> 
-                    <div>{{ item.hash }}</div>
-                  </v-col> 
-                </v-row>
-                <v-row justify="start">
-                  <v-col class="text-left">
-                    <b>Notes</b> 
-                    <div>{{ item.notes }}</div>
-                  </v-col> 
-                </v-row>    
-                <v-row>
-                  <v-col class="text-left">
-                    <b>Created On</b> 
-                    <div>{{ item.createdAt }}</div>
-                  </v-col> 
-                  <v-col class="text-left">
-                    <b>Updated On</b> 
-                    <div>{{ item.updatedAt }}</div>
-                  </v-col> 
-                  <v-col class="text-left">
-                    <b>Expires On</b> 
-                    <div>{{ item.expiresAt }}</div>
-                  </v-col> 
-                </v-row>            
-              </v-expansion-panel-content>
-            </v-expansion-panel>
+            <cluster-route
+              :key="'cluster-route-'+item.uuid"
+              v-bind="item">
+            </cluster-route>
           </template>
         </v-expansion-panels>
       </v-col>
@@ -176,7 +110,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import {Certificate} from '@/models/certificate';
+import {ClusterRoute} from '~/models/cluster-route';
 
 export default Vue.extend({
   async asyncData({ $axios }) {
@@ -198,11 +132,9 @@ export default Vue.extend({
         // @todo: remove once endpoint is available
         const options = {
           services: [
-            {name: 'Main App', uuid: 'asd-678'},
-            {name: 'Other App', uuid: 'asd-567'},
-            {name: 'Another App', uuid: 'asd-456'},
-            {name: 'Left App', uuid: 'asd-345'},
-            {name: 'Right App', uuid: 'asd-234'},
+            {name: 'Cola', uuid: 'asd-678'},
+            {name: 'Spritzer', uuid: 'asd-567'},
+            {name: 'Spritzer DR', uuid: 'asd-456'},
           ]
         };
         return { options };
@@ -215,7 +147,7 @@ export default Vue.extend({
     const service = '';
     const filters: string[] = [];
     const filtersOpen = false;
-    const items: Certificate[] = [];
+    const items: ClusterRoute[] = [];
     const hasSearched = false;
     const loadingItems = false;
     return {
@@ -252,19 +184,24 @@ export default Vue.extend({
       this.hasSearched = true;
       this.loadingItems = true;
       for(let i = 0; i < 100; i++) {
-        const item: Certificate = {
+        const item: ClusterRoute = {
           uuid:  this.$faker.fake('{{datatype.uuid}}'),
-          name:  this.$faker.fake('{{internet.domainName}}'),
-          hash:  this.$faker.fake('{{datatype.hexaDecimal}}'),
-          notes:  this.$faker.fake('{{lorem.sentence}}'),
-          tags:  [this.$faker.fake('{{name.jobArea}}'), this.$faker.fake('{{name.jobArea}}')],
-          createdAt:  this.$faker.fake('{{date.past}}'),
-          updatedAt:  this.$faker.fake('{{date.recent}}'),
-          expiresAt:  this.$faker.fake('{{date.future}}'),
-          createdBy:  this.$faker.fake('{{internet.userName}}'),
-          isPrivate:  this.$faker.fake('{{datatype.boolean}}'),
+          namespace:  this.$faker.fake('{{datatype.hexaDecimal}}'),
+          routeName:  this.$faker.fake('{{company.companyName}}'),
+          routeHost:  this.$faker.fake('{{internet.domainName}}'),
+          certHash:  this.$faker.fake('{{datatype.hexaDecimal}}'),
+          wildcard:  this.$faker.fake('{{datatype.boolean}}'),
+          certCreatedOn:  this.$faker.fake('{{date.past}}'),
+          certExpiresOn:  this.$faker.fake('{{date.future}}'),
+          certSans: [
+            this.$faker.fake('{{internet.domainName}}'),
+            this.$faker.fake('{{internet.domainName}}'),
+            this.$faker.fake('{{internet.domainName}}')
+          ],
+          encryptionType:  this.$faker.fake('{{name.jobArea}}'),
+          insecureTraffic: this.$faker.fake('{{name.jobArea}}'),
         };
-        if (new Date(this.picker).getTime() >= new Date(item.expiresAt).getTime()) {
+        if (new Date(this.picker).getTime() >= new Date(item.certExpiresOn).getTime()) {
           this.items.push(item);
         }
       }
@@ -280,7 +217,14 @@ export default Vue.extend({
   }
 })
 </script>
-
+<style>
+.v-text-field.v-text-field .v-text-field__details.v-text-field__details {
+  margin: 0;
+  padding: 0;
+  height: 0;
+  min-height: 0;
+}
+</style>
 <style scoped>
 .container {
   display: flex;
@@ -306,7 +250,7 @@ export default Vue.extend({
 .v-expansion-panels .v-expansion-panel {
   margin-bottom: 4px;
 }
-.v-expansion-panel-header .v-input__control {
+.v-expansion-panel-header .v-expansion-panel-header .v-input__control {
     flex-direction: row;
     flex-wrap: nowrap;
 }
