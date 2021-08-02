@@ -75,9 +75,10 @@ export default Vue.extend({
   },
   data() {
     const threshold = 100;
-    const allItems: ClusterRoute[] = allItemsConst;
+    const allItems: ClusterRoute[] = [];
     const allNamespaces: String[] = [];
-    allItemsConst.forEach((item: ClusterRoute) => {
+    allItemsConst.forEach((item: any) => {
+      allItems.push({...item, certCreatedOn: new Date(item.certCreatedOn), certExpiresOn: new Date(item.certExpiresOn)})
       allNamespaces.push(item.namespace);
     });
     const visibleItems: ClusterRoute[] = [];
@@ -98,40 +99,13 @@ export default Vue.extend({
       title: "Search"
     };
   },
-  // mounted(){
-  //   const clusterOptions = ['asd-678', 'asd-567', 'asd-456'];
-  //   const ecrytionOptions = ['Edge', 'ReEncrypt', 'Passthrough'];
-  //   const insecureOptions = ['None', 'Redirect', 'Allow'];
-  //   for(let i = 0; i < 3000; i++) {
-  //     const item: ClusterRoute = {
-  //       uuid:  this.$faker.fake('{{datatype.uuid}}'),
-  //       cluster:  clusterOptions[Math.round(Math.random()*2)],
-  //       namespace:  this.$faker.fake('{{datatype.uuid}}').substring(0, 8),
-  //       routeName:  this.$faker.fake('{{company.companyName}}'),
-  //       routeHost:  this.$faker.fake('{{internet.domainName}}'),
-  //       certHash:  this.$faker.fake('{{datatype.hexaDecimal}}'),
-  //       wildcard:  this.$faker.fake('{{datatype.boolean}}') === 'true',
-  //       certCreatedOn:  this.$faker.fake('{{date.past}}'),
-  //       certExpiresOn:  this.$faker.fake('{{date.future}}'),
-  //       certSans: [
-  //         this.$faker.fake('{{internet.domainName}}'),
-  //         this.$faker.fake('{{internet.domainName}}'),
-  //         this.$faker.fake('{{internet.domainName}}')
-  //       ],
-  //       encryptionType:  ecrytionOptions[Math.round(Math.random()*2)],
-  //       insecureTraffic: insecureOptions[Math.round(Math.random()*2)],
-  //     };
-  //     this.allItems.push(item);
-  //   }
-  // },
   methods: {
     getRoutes(filters: ClusterRouteFilters): void {
-      console.log(filters)
       this.hasSearched = true;
       this.loadingItems = true;      
       this.visibleItems = this.allItems;
       if (filters.certExpiresOn) {
-        this.visibleItems = this.visibleItems.filter((item) => new Date(filters.certExpiresOn).getTime() >= new Date(item.certExpiresOn).getTime());
+        this.visibleItems = this.visibleItems.filter((item) => new Date(filters.certExpiresOn || 0).getTime() >= new Date(item.certExpiresOn).getTime());
       }
       if (filters.clusters.length > 0) {
         this.visibleItems = this.visibleItems.filter((item) => filters.clusters.includes(item.cluster));

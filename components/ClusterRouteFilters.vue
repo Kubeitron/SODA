@@ -133,7 +133,6 @@ export default Vue.extend({
     const cluster = '';
     const filtersOpen = false;
     const filters = new ClusterRouteFilters();
-    console.log(filters);
     if (this.certExpiresOn !== null) {
       filters.certExpiresOn = this.certExpiresOn;
     }

@@ -95,11 +95,11 @@ export default Vue.extend({
       required: true
     },
     certCreatedOn: {
-      type: String,
+      type: Date,
       required: true
     },
     certExpiresOn: {
-      type: String,
+      type: Date,
       required: true
     },
     certSans: {
