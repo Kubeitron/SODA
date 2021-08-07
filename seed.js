@@ -2,13 +2,13 @@ const fs = require('fs');
 const $faker = require('faker');
 
 const allItems = [];
-const clusterOptions = ['asd-678', 'asd-567', 'asd-456'];
-const encryptionOptions = ['Edge', 'ReEncrypt', 'Passthrough'];
-const insecureOptions = ['None', 'Redirect', 'Allow'];
+const clusterOptions = require('./assets/data/clusters.json');
+const encryptionOptions = require('./assets/data/encryptionType.json');
+const insecureOptions = require('./assets/data/insecureTraffic.json');
 for(let i = 0; i < 3000; i++) {
   const item = {
     uuid:  $faker.datatype.uuid(),
-    cluster:  clusterOptions[Math.round(Math.random()*2)],
+    cluster: clusterOptions[Math.round(Math.random() * 2)],
     namespace:  $faker.datatype.uuid().substring(0, 8),
     routeName:  $faker.company.companyName(),
     routeHost:  $faker.internet.domainName(),
@@ -26,9 +26,10 @@ for(let i = 0; i < 3000; i++) {
   };
   allItems.push(item);
 }
+
 const jsonContent = JSON.stringify(allItems);
 
-fs.writeFile("assets/routes.json", jsonContent, 'utf8', function (err) {
+fs.writeFile("assets/data/routes.json", jsonContent, 'utf8', function (err) {
   if (err) {
     console.log("An error occured while writing JSON Object to File.");
     return console.log(err);

@@ -40,7 +40,8 @@
 import Vue from 'vue';
 import {ClusterRoute} from '~/models/cluster-route';
 import { ClusterRouteFilters } from '~/models/cluster-route-filters';
-import allItemsConst from "@/assets/routes.json"
+import allItemsConst from "@/assets/data/routes.json"
+import clusters from '~/assets/data/clusters.json'
 
 export default Vue.extend({
   async asyncData({ $axios }) {
@@ -61,11 +62,7 @@ export default Vue.extend({
         console.error('Request errored', error)
         // @todo: remove once endpoint is available
         const options = {
-          clusters: [
-            {name: 'Cola', uuid: 'asd-678'},
-            {name: 'Spritzer', uuid: 'asd-567'},
-            {name: 'Spritzer DR', uuid: 'asd-456'},
-          ]
+          clusters
         };
         return { options };
       }

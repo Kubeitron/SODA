@@ -142,7 +142,7 @@ export default Vue.extend({
       filters.namespaces = [];
     }
     if (this.clusters.length > 0) {
-      filters.clusters = this.clusters as string[];
+      filters.clusters = this.clusters.map((cluster: any) => cluster.uuid) as string[];
     } else {
       filters.clusters = [];
     }

@@ -31,9 +31,46 @@
       </v-btn>
       <v-toolbar-title v-text="title" />
       <v-spacer />
-      <v-btn icon title="Go to SODA on Github" @click.stop="openGithub">
-        <v-icon>mdi-github</v-icon>
-      </v-btn>
+      <v-tooltip
+        v-if="$store.getters['auth/isLoggedIn']"
+        bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            v-bind="attrs"
+            v-on="on"
+            icon
+            @click.stop="$store.dispatch('auth/logout')">
+            <v-icon>mdi-logout</v-icon>
+          </v-btn>
+        </template>
+        <span>Log out of SODA</span>
+      </v-tooltip>
+      <v-tooltip
+        v-if="!$store.getters['auth/isLoggedIn']"
+        bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            v-bind="attrs"
+            v-on="on"
+            icon
+            @click.stop="$store.dispatch('auth/login')">
+            <v-icon>mdi-login</v-icon>
+          </v-btn>
+        </template>
+        <span>Log into SODA</span>
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            v-bind="attrs"
+            v-on="on"
+            icon
+            @click.stop="openGithub">
+            <v-icon>mdi-github</v-icon>
+          </v-btn>
+        </template>
+        <span>Go to SODA on Github</span>
+      </v-tooltip>
     </v-app-bar>
     <v-main>
       <nuxt />

@@ -2,7 +2,7 @@
  * Route filters on the cluster
  */
 export class ClusterRouteFilters {
-  clusters: string[] = [];
+  clusters: any[] = [];
   certExpiresOn: string|null = null;
   namespaces: string[] = [];
 }

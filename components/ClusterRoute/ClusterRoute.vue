@@ -78,6 +78,10 @@ export default Vue.extend({
       type: String,
       required: true
     },
+    cluster: {
+      type: Object,
+      required: true
+    },
     namespace: {
       type: String,
       required: true

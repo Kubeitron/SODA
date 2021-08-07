@@ -98,7 +98,11 @@ out
 # Nuxt.js build / generate output
 .nuxt
 dist
-assets/routes.json
+assets/data/*.json
+
+# Storybook
+.nuxt-storybook
+storybook-static
 
 # Gatsby files
 .cache/
