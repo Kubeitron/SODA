@@ -30,7 +30,6 @@
       "@nuxt/types",
       "@nuxtjs/axios",
       "@nuxt/content",
-      "@nuxtjs/auth-next",
       "faker-nuxt",
     ]
   },

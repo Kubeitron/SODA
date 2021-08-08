@@ -45,7 +45,6 @@ import clusters from '~/assets/data/clusters.json'
 
 export default Vue.extend({
   async asyncData({ $axios }) {
-
     const source = $axios.CancelToken.source();
 
     try {

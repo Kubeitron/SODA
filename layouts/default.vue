@@ -32,28 +32,28 @@
       <v-toolbar-title v-text="title" />
       <v-spacer />
       <v-tooltip
-        v-if="$store.getters['auth/isLoggedIn']"
+        v-if="$keycloak.authenticated"
         bottom>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
             v-bind="attrs"
             v-on="on"
             icon
-            @click.stop="$store.dispatch('auth/logout')">
+            @click.stop="$keycloak.logoutFn()">
             <v-icon>mdi-logout</v-icon>
           </v-btn>
         </template>
         <span>Log out of SODA</span>
       </v-tooltip>
       <v-tooltip
-        v-if="!$store.getters['auth/isLoggedIn']"
+        v-if="!$keycloak.authenticated"
         bottom>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
             v-bind="attrs"
             v-on="on"
             icon
-            @click.stop="$store.dispatch('auth/login')">
+            @click.stop="$keycloak.loginFn()">
             <v-icon>mdi-login</v-icon>
           </v-btn>
         </template>

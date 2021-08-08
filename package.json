@@ -18,7 +18,8 @@
   "private": true,
   "scripts": {
     "seed": "node seed.js",
-    "dev": "yarn seed && nuxt",
+    "dev": "nuxt",
+    "dev:seed": "yarn seed && yarn dev",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
@@ -42,6 +43,7 @@
     "url": "https://github.com/Kubeitron/soda-ui.git"
   },
   "dependencies": {
+    "@dsb-norge/vue-keycloak-js": "^2.0.1-beta",
     "@nuxt/content": "^1.14.0",
     "@nuxtjs/axios": "^5.13.1",
     "@nuxtjs/pwa": "^3.3.5",

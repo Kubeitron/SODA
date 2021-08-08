@@ -17,8 +17,16 @@ export default {
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: ['@/assets/main.scss'],
 
+  publicRuntimeConfig: {
+    KEYCLOAK_HOST: process.env.KEYCLOAK_HOST,
+    KEYCLOAK_REALM: process.env.KEYCLOAK_REALM,
+    KEYCLOAK_CLIENT_ID: process.env.KEYCLOAK_CLIENT_ID,
+    BASE_URL: process.env.BASE_URL,
+    API_HOST: process.env.API_HOST
+  },
+
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
+  plugins: ['~/plugins/auth.ts'],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,

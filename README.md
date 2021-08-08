@@ -27,6 +27,9 @@ For detailed explanation on how things work from a functional level, check out [
 # install dependencies
 $ yarn install
 
+# create & setup environment variables
+$ cp .env.template .env
+
 # serve with hot reload at localhost:3000
 $ yarn dev
 
