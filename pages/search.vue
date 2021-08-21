@@ -70,6 +70,7 @@ export default Vue.extend({
     return { };
   },
   data() {
+    console.log(this)
     const threshold = 100;
     const allItems: ClusterRoute[] = [];
     const allNamespaces: String[] = [];
