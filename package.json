@@ -50,7 +50,7 @@
     "@nuxtjs/vuetify": "^1.12.1",
     "core-js": "^3.9.1",
     "faker-nuxt": "zacpez/faker-nuxt#master",
-    "nuxt": "^2.15.3",
+    "nuxt": "^3.4.3",
     "prism-themes": "^1.7.0",
     "vue-virtual-scroller": "^1.0.10"
   },
