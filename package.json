@@ -78,7 +78,7 @@
     "nightwatch": "^1.5.1",
     "postcss": "^8.3.6",
     "prettier": "^2.2.1",
-    "stylelint": "^13.12.0",
+    "stylelint": "^15.10.1",
     "stylelint-config-prettier": "^8.0.2",
     "stylelint-config-standard": "^21.0.0",
     "ts-node": "^10.1.0"
